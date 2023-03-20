@@ -1,7 +1,9 @@
 package ru.kata.spring.boot_security.demo.repositories;
 
+import org.hibernate.Hibernate;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.models.User;
 
 import javax.persistence.EntityManager;
@@ -30,12 +32,13 @@ public class UserRepositoryImpl implements UserRepository{
 
     @Override
     public User getUserByUsername(String username) {
-        return (User) entityManager.createQuery("select u from User u where u.username = ?1").setParameter(1, username).getSingleResult();
+        return (User) entityManager.createQuery("select u from User u left join fetch u.roles where u.username = ?1").setParameter(1, username).getSingleResult();
+
     }
 
     @Override
     public List<User> getAllUsers() {
-        return entityManager.createQuery("SELECT u from User u").getResultList();
+        return entityManager.createQuery("select u from User u left join fetch u.roles").getResultList();
     }
 
     @Override
